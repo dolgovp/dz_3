@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home_nav"
+        android:icon = "@drawable/ic_outline_directions_bike_24"
+        android:title="Мероприятия"/>
+    <item
+        android:id = "@+id/favor_nav"
+        android:icon = "@drawable/ic_outline_flag_24"
+        android:title="Мои мероприятия"/>
+    <item
+        android:id = "@+id/profile_nav"
+        android:icon = "@drawable/ic_outline_co_present_24"
+        android:title="Мои мероприятия"/>
+</menu>
