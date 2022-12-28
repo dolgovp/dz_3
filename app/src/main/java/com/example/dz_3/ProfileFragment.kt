@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
 
 class ProfileFragment : Fragment() {
+    private val profileViewModel: ProfileViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -18,7 +20,7 @@ class ProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent{
-                Profile()
+                Profile(viewModel = profileViewModel)
             }
         }
     }
