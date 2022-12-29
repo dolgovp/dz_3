@@ -37,9 +37,7 @@ import coil.request.ImageRequest
 import com.example.dz_3.data.Event
 
 @Composable
-fun EventsGrid(viewModel: HomeViewModel){
-    val eventsState = viewModel.state.collectAsState()
-    var events = eventsState.value.events
+fun EventsGrid(events: List<Event>, all: Int){
 LazyColumn(
     modifier = Modifier
         .fillMaxWidth()
@@ -53,24 +51,26 @@ LazyColumn(
     horizontalAlignment = Alignment.CenterHorizontally
 
 ){
+    item{
+        var header = "Мероприятия"
+        if (all ==0) header = "Мои мероприятия"
+        Text(header,
+            modifier = Modifier
+                .background(colorResource(id = R.color.fragment_background))
+                .padding(
+                    top = 20.dp,
+                    bottom = 12.dp
+                )
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            color = colorResource(id = R.color.text_main)
+        )
+    }
     if(events.isEmpty()){
         Loading()
     }else{
-        item{
-            Text(text="Мероприятия",
-                modifier = Modifier
-                    .background(colorResource(id = R.color.fragment_background))
-                    .padding(
-                        top = 20.dp,
-                        bottom = 12.dp
-                    )
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                color = colorResource(id = R.color.text_main)
-            )
-        }
         items(
             items = events,
             key = {it.id}
@@ -136,7 +136,9 @@ LazyColumn(
                             .fillMaxSize()
                             .defaultMinSize(minWidth = 200.dp, minHeight = 200.dp),
                     ) {
+                        Log.d(TAG, "IMG:"+ it.imgSrc)
                         AsyncImage(
+
                             model = ImageRequest.Builder(context = LocalContext.current)
                                 .data(it.imgSrc)
                                 .build(),
@@ -151,10 +153,13 @@ LazyColumn(
             }
         }
     }
-}
+    item {
+        Spacer(modifier = Modifier.height(30.dp))
+    }
+    }
 }
 
-private fun LazyListScope.Loading() {
+fun LazyListScope.Loading() {
     item {
         CircularProgressIndicator(modifier = Modifier
                 .padding(10.dp), 
@@ -207,3 +212,4 @@ fun LikeGroup(event: Event){
 
     }
 }
+

@@ -9,6 +9,7 @@ class EventRepository(
     private val eventDao: EventDao
 ) {
     fun events(user_name: String): Flow<List<Event>> = eventDao.getEventsByUserName(user_name)
+    fun allEvents(): Flow<List<Event>> = eventDao.getAllEvents()
     suspend fun addEvent(event: Event): Long{
         return  when (val local = eventDao.getEventById(event.id)){
             null -> eventDao.insert(event)

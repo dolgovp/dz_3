@@ -18,4 +18,7 @@ abstract class EventDao {
 
     @Query(value = "SELECT * FROM events WHERE id = :id")
     abstract suspend fun getEventById(id: Long): Event
+
+    @Query(value = "SELECT * FROM events")
+    abstract fun getAllEvents(): Flow<List<Event>>
 }
