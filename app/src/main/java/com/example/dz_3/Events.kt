@@ -1,7 +1,9 @@
 package com.example.dz_3
 
+import android.content.ContentValues.TAG
 import android.graphics.fonts.FontStyle
 import android.media.Image
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,6 +14,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,9 +32,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
-@Preview
 @Composable
-fun EventsGrid(){
+fun EventsGrid(viewModel: HomeViewModel){
+    val eventsState = viewModel.state.collectAsState()
+    var events = eventsState.value.events
+    Log.d(TAG, "events" + events.toString())
 LazyColumn(
     modifier = Modifier
         .fillMaxWidth()
@@ -71,11 +76,13 @@ LazyColumn(
                 Column(
                     modifier = Modifier.padding(15.dp)
                 ) {
-                    Text("Чемпионат",
-                        modifier = Modifier
-                            .padding(2.dp),
-                        fontSize = 18.sp,
-                        color = colorResource(R.color.text_main))
+                    if (!events.isEmpty()){
+                        Text(events.first().name,
+                            modifier = Modifier
+                                .padding(2.dp),
+                            fontSize = 18.sp,
+                            color = colorResource(R.color.text_main))
+                    }
                     Text("Дата",
                         modifier = Modifier
                             .padding(2.dp),
