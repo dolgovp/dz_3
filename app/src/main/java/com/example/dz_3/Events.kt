@@ -8,9 +8,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,14 +31,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.dz_3.data.Event
 
 @Composable
 fun EventsGrid(viewModel: HomeViewModel){
     val eventsState = viewModel.state.collectAsState()
     var events = eventsState.value.events
-    Log.d(TAG, "events" + events.toString())
 LazyColumn(
     modifier = Modifier
         .fillMaxWidth()
@@ -50,23 +53,28 @@ LazyColumn(
     horizontalAlignment = Alignment.CenterHorizontally
 
 ){
-    item{
-        Text(text="Мероприятия",
-            modifier = Modifier
-                .background(colorResource(id = R.color.fragment_background))
-                .padding(
-                    top = 20.dp,
-                    bottom = 12.dp
-                )
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            color = colorResource(id = R.color.text_main)
-        )
-    }
-    for (i in 1..5){
+    if(events.isEmpty()){
+        Loading()
+    }else{
         item{
+            Text(text="Мероприятия",
+                modifier = Modifier
+                    .background(colorResource(id = R.color.fragment_background))
+                    .padding(
+                        top = 20.dp,
+                        bottom = 12.dp
+                    )
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                color = colorResource(id = R.color.text_main)
+            )
+        }
+        items(
+            items = events,
+            key = {it.id}
+        ){
             Spacer(modifier = Modifier.height(5.dp))
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -76,14 +84,12 @@ LazyColumn(
                 Column(
                     modifier = Modifier.padding(15.dp)
                 ) {
-                    if (!events.isEmpty()){
-                        Text(events.first().name,
-                            modifier = Modifier
-                                .padding(2.dp),
-                            fontSize = 18.sp,
-                            color = colorResource(R.color.text_main))
-                    }
-                    Text("Дата",
+                    Text(it.name,
+                        modifier = Modifier
+                            .padding(2.dp),
+                        fontSize = 18.sp,
+                        color = colorResource(R.color.text_main))
+                    Text(it.date,
                         modifier = Modifier
                             .padding(2.dp),
                         fontSize = 12.sp,
@@ -95,7 +101,7 @@ LazyColumn(
                             contentDescription = "smth",
                             tint = colorResource(R.color.text_main),
                         )
-                        Text("Место",
+                        Text(it.city,
                             modifier = Modifier
                                 .padding(2.dp),
                             fontSize = 12.sp,
@@ -108,22 +114,21 @@ LazyColumn(
                             .padding(10.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        for (i in 1..2){
-                            Card(
-                                modifier = Modifier
-                                    .padding(5.dp),
+                        Card(
+                            modifier = Modifier
+                                .padding(5.dp),
 
-                                shape = RoundedCornerShape(15.dp),
-                            ) {
-                                Text("категория", modifier = Modifier
-                                    .background(color = colorResource(R.color.category_background))
-                                    .padding(5.dp),
-                                    color = colorResource(R.color.text_main),
-                                    fontSize = 12.sp,
-                                )
+                            shape = RoundedCornerShape(15.dp),
+                        ) {
+                            Text(it.cat, modifier = Modifier
+                                .background(color = colorResource(R.color.category_background))
+                                .padding(5.dp),
+                                color = colorResource(R.color.text_main),
+                                fontSize = 12.sp,
+                            )
 
-                            }
                         }
+
                     }
                     Card(
                         shape = RoundedCornerShape(15.dp),
@@ -133,7 +138,7 @@ LazyColumn(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(context = LocalContext.current)
-                                .data("https://pitbiker.ru/wa-data/public/photos/64/00/64/64.970.jpg")
+                                .data(it.imgSrc)
                                 .build(),
                             error = painterResource(R.drawable.ic_baseline_sports_motorsports_24),
                             placeholder = painterResource(R.drawable.ic_baseline_sports_motorsports_24),
@@ -141,7 +146,7 @@ LazyColumn(
                             contentScale = ContentScale.Crop,
                         )
                     }
-                    LikeGroup()
+                    LikeGroup(it)
                 }
             }
         }
@@ -149,10 +154,17 @@ LazyColumn(
 }
 }
 
+private fun LazyListScope.Loading() {
+    item {
+        CircularProgressIndicator(modifier = Modifier
+                .padding(10.dp), 
+            color = colorResource(id = R.color.text_main)
+        )
+    }
+}
 
-@Preview
 @Composable
-fun LikeGroup(){
+fun LikeGroup(event: Event){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,7 +179,7 @@ fun LikeGroup(){
                 contentDescription = "smth",
                 tint = colorResource(R.color.text_second),
             )
-            Text("10",color = colorResource(id = R.color.text_main))
+            Text(event.like.toString(),color = colorResource(id = R.color.text_main))
         }
 
         Row(
@@ -178,7 +190,7 @@ fun LikeGroup(){
                 contentDescription = "smth",
                 tint = colorResource(R.color.text_second),
             )
-            Text("20",color = colorResource(id = R.color.text_main))
+            Text(event.look_cnt.toString(),color = colorResource(id = R.color.text_main))
         }
 
 
@@ -190,7 +202,7 @@ fun LikeGroup(){
                 contentDescription = "smth",
                 tint = colorResource(R.color.text_second),
             )
-            Text("30",color = colorResource(id = R.color.text_main))
+            Text(event.users_cnt.toString(),color = colorResource(id = R.color.text_main))
         }
 
     }
